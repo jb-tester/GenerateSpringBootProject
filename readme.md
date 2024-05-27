@@ -23,6 +23,7 @@ It contains of:
 TODO:
  - one more module for view controller (Thymeleaf): test model attributes defining/injecting
  - add xml configurations to the beans modules
+ - client module 
  - `@ConfigurationProperties` (??)
  - Spring Security 
  - reconsider the beans/components naming (use some random ones)
