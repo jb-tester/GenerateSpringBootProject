@@ -21,6 +21,7 @@ public class Main {
     private static int columnsAmount = 3;
     private static int componentsAmount = 3;
     private static int beansAmount = 3;
+    private static String springBootVersion = "3.2.6";
 
     public static void main(String[] args) throws Exception {
         ResourceBundle rb = ResourceBundle.getBundle("config");
@@ -32,6 +33,7 @@ public class Main {
         columnsAmount = Integer.parseInt(rb.getString("columns_amount"));
         componentsAmount = Integer.parseInt(rb.getString("components_amount"));
         beansAmount = Integer.parseInt(rb.getString("beans_amount"));
+        springBootVersion = rb.getString("springboot_version");
         generateProject();
     }
 
@@ -50,6 +52,7 @@ public class Main {
         }
 
         copyTemplateFile(new File("./src/main/resources/main_pom.txt"), new File(projectPath + "/pom.xml"));
+        modifyFile(new File(projectPath + "/pom.xml"),"XXX", springBootVersion);
 
         File beansModulesPom = new File(projectPath + "/beans-modules/pom.xml");
         copyTemplateFile(new File("./src/main/resources/beans_modules_pom.txt"), beansModulesPom);
