@@ -1,0 +1,16 @@
+package com.mytests.spring.webRestAppModule;
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
+
+@SpringBootApplication(scanBasePackages = {"com.mytests.spring.webRestAppModule", "com.mytests.spring.jpa"})
+@Import({Config0.class})
+public class WebAppModuleApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WebAppModuleApplication.class, args);
+    }
+
+}
