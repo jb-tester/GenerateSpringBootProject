@@ -12,17 +12,22 @@ It contains of:
       each entity defining the specified (by `columns_amount`) number of String fields plus single `id`
    - the similar amount of crud repositories, one per entity, named `EntityX_YRepository`. Each repository defines
       the `findAll()` method and the `@Query`-annotated method per each column.
+- specified by `xml_modules_amount` property amount of 'xml' modules that contain:
+   - the specified by `xml_beans_amount` number of classes,
+   - the xml config that defines these beans
+- the single supermodule that contains the above xml bean modules 
 - single module for the main application and controllers, that depends on all the above modules, and contains:
+   - the main xml config file that imports all project xml configs
    - the application class (`@SpringBootApplication`) that:
       - scans the packages of jpa modules
       - imports the config classes of all bean modules
-   - multiple `@RestController` classes - one per each bean/jpa module. Each controller:
-      - injects all beans and components/ all repositories from the corresponding bean/jpa module
+      - imports the above main xml config
+   - multiple `@RestController` classes - one per each bean/xmlBean/jpa module. Each controller:
+      - injects all beans and components/ all repositories from the corresponding bean/xmlBean/jpa module
       - defines the single mapping method for each bean/component or repository returning the bean id or the results of repository `findAll()` method
      
 TODO:
  - one more module for view controller (Thymeleaf): test model attributes defining/injecting
- - add xml configurations to the beans modules
  - client module 
  - `@ConfigurationProperties` (??)
  - Spring Security 
