@@ -25,10 +25,15 @@ It contains of:
    - multiple `@RestController` classes - one per each bean/xmlBean/jpa module. Each controller:
       - injects all beans and components/ all repositories from the corresponding bean/xmlBean/jpa module
       - defines the single mapping method for each bean/component or repository returning the bean id or the results of repository `findAll()` method
+- the single separate client module that contains:
+      - the separate `@HttpExchange` annotated interfaces that define the mappings for each main module controller
+      - `application.properties` file with the base url for clients
+      - the main class that:
+         - imports the above interfaces
+         - defines the CommandLineRunner bean that autowires all client interfaces and calls the corresponding methods
      
 TODO:
- - one more module for view controller (Thymeleaf): test model attributes defining/injecting
- - client module 
+ - one more module for view controller (Thymeleaf): test model attributes defining/injecting (??)
  - `@ConfigurationProperties` (??)
- - Spring Security 
+ - Spring Security (??)
  - reconsider the beans/components naming (use some random ones)

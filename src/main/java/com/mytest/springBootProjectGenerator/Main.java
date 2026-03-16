@@ -96,6 +96,10 @@ public class Main {
                 "webRestAppModule", allBeansByModule, allReposByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
         webRestModule.generateAll();
 
+        GenerateClientModule clientModule = new GenerateClientModule(projectPath,
+                "clientModule", allBeansByModule, allReposByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
+        clientModule.generateAll();
+
        // allBeansByModule.forEach((k, v) -> System.out.println((k + ":" + v)));
        //allReposByModule.forEach((k, v) -> System.out.println((k + ":" + v.iterator().next().getBeanName() + " " + v.iterator().next().getClassName() + " " + v.iterator().next().getEntityName())));
 

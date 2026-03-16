@@ -34,6 +34,7 @@
        <module>jpa-modules</module>
        <module>xml-modules</module>
        <module>web-rest-app-module</module>
+       <module>client-module</module>
    </modules>
 
 
