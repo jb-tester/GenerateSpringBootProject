@@ -7,11 +7,12 @@ It contains of:
    - specified (by `components_amount` property) number of service interfaces, named `ServiceX_Y`, where X is the module number and Y is the service number;
      each service interface has 3 `@Component`-annotated implementations, named `ServiceX_YComponentZ`. Thus each module has `components_amount`*3 components.
 - specified (by `jpa_modules_amount` property) amount of 'jpa' modules that contain:
-   - the Application class
+   - the configuration class
    - the specified (by `entities_amount`) property number of entity classes, named `EntityX_Y`, where X is the module number and Y is the entity number,
       each entity defining the specified (by `columns_amount`) number of String fields plus single `id`
    - the similar amount of crud repositories, one per entity, named `EntityX_YRepository`. Each repository defines
       the `findAll()` method and the `@Query`-annotated method per each column.
+   - the sql scripts for populating the database
 - specified by `xml_modules_amount` property amount of 'xml' modules that contain:
    - the specified by `xml_beans_amount` number of classes,
    - the xml config that defines these beans

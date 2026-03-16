@@ -11,8 +11,8 @@
     <groupId>com.mytests.spring</groupId>
     <artifactId>spring-boot-multiple-mvn-modules</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-multiple-mvn-modules</name>
-    <description>spring-boot-multiple-mvn-modules</description>
+    <name>application module</name>
+    <description>Multi-module Spring Boot project generated automatically</description>
     <packaging>pom</packaging>
     <properties>
         <java.version>17</java.version>
