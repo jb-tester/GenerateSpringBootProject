@@ -13,14 +13,16 @@ public class GenerateWebRestModule {
     private final String packageName;
     private final Map<Integer, List<BeanProperties>> allBeans;
     private final Map<Integer, List<BeanProperties>> allRepos;
+    private final Map<Integer, List<BeanProperties>> allXmlBeans;
     private final int modulesAmount;
     private final int jpa_modules_amount;
 
-    public GenerateWebRestModule(String path, String packageName, Map<Integer, List<BeanProperties>> allBeans, Map<Integer, List<BeanProperties>> allRepos, int modulesAmount, int jpa_modules_amount) {
+    public GenerateWebRestModule(String path, String packageName, Map<Integer, List<BeanProperties>> allBeans, Map<Integer, List<BeanProperties>> allRepos, Map<Integer, List<BeanProperties>> allXmlBeans, int modulesAmount, int jpa_modules_amount) {
         this.path = path;
         this.packageName = packageName;
         this.allBeans = allBeans;
         this.allRepos = allRepos;
+        this.allXmlBeans = allXmlBeans;
         this.modulesAmount = modulesAmount;
         this.jpa_modules_amount = jpa_modules_amount;
     }
@@ -49,17 +51,28 @@ public class GenerateWebRestModule {
             dependencies.append("           <artifactId>jpa-module").append(jpaModuleNumber).append("</artifactId>\n");
             dependencies.append("        </dependency>\n");
         }
+        for (int xmlModuleNumber = 0; xmlModuleNumber < allXmlBeans.size(); xmlModuleNumber++) {
+            dependencies.append("""
+                            <dependency>
+                               <groupId>com.mytests.spring</groupId>
+                               <version>0.0.1-SNAPSHOT</version>
+                    """);
+            dependencies.append("           <artifactId>xml-module").append(xmlModuleNumber).append("</artifactId>\n");
+            dependencies.append("        </dependency>\n");
+        }
         modifyFile(targetPom,"DDD", String.valueOf(dependencies));
+        generateMainXmlConfig(moduleDir);
         PrintWriter appClassWriter = createFile(moduleDir + "/src/main/java/com/mytests/spring/", packageName, "WebAppModuleApplication", ".java");
         if (appClassWriter != null) {
             appClassWriter.println("""
                     package com.mytests.spring.webRestAppModule;
-                    
-                    
+
+
                     import org.springframework.boot.SpringApplication;
                     import org.springframework.boot.autoconfigure.SpringBootApplication;
                     import org.springframework.context.annotation.Import;
-                    
+                    import org.springframework.context.annotation.ImportResource;
+
                     @SpringBootApplication(scanBasePackages = {"com.mytests.spring.webRestAppModule", "com.mytests.spring.jpa"})
                     @Import({
                     """);
@@ -67,13 +80,14 @@ public class GenerateWebRestModule {
                 appClassWriter.println("      com.mytests.spring.beansModule" + i +".Config" + i + ".class, ");
             }
             appClassWriter.println("      com.mytests.spring.beansModule" + (modulesAmount-1) + ".Config"+ (modulesAmount-1) +".class }) ");
+            appClassWriter.println("@ImportResource(\"classpath:/mainApplicationContext.xml\")");
             appClassWriter.println("""
                     public class WebAppModuleApplication {
-                    
+
                         public static void main(String[] args) {
                             SpringApplication.run(WebAppModuleApplication.class, args);
                         }
-                    
+
                     }
                     """);
             appClassWriter.close();
@@ -84,7 +98,57 @@ public class GenerateWebRestModule {
         for (int i = 0; i < jpa_modules_amount; i++) {
             generateControllerForRepos(i, moduleDir);
         }
+        for (int i = 0; i < allXmlBeans.size(); i++) {
+            generateControllerForXmlBeans(i, moduleDir);
+        }
     }
+    public void generateControllerForXmlBeans(int moduleNumber, String moduleDir) throws Exception {
+        String controllerClassName = "RestControllerForXmlModule" + moduleNumber;
+        PrintWriter writer = createFile(moduleDir + "/src/main/java/com/mytests/spring/", packageName, controllerClassName, ".java");
+        if (writer != null) {
+            writer.println("package com.mytests.spring." + packageName + ";\n\n");
+            writer.println("import " + allXmlBeans.get(moduleNumber).get(0).getPackageName() + ".*;\n");
+            writer.println("""
+                    import org.springframework.web.bind.annotation.GetMapping;
+                    import org.springframework.web.bind.annotation.RequestMapping;
+                    import org.springframework.web.bind.annotation.RestController;
+                    import org.springframework.beans.factory.annotation.Autowired;
+                    import org.springframework.beans.factory.annotation.Qualifier;
+
+                    @RestController
+                    """);
+            writer.println("@RequestMapping(\"/xml-module" + moduleNumber + "\")");
+            writer.println("public class " + controllerClassName + " {\n\n");
+            for (BeanProperties bean : allXmlBeans.get(moduleNumber)) {
+                writer.println("    @Autowired");
+                writer.println("    @Qualifier(\"" + bean.getBeanName() + "\")");
+                writer.println("    private " + bean.getClassName() + " " + bean.getBeanName() + ";\n");
+            }
+            for (BeanProperties bean : allXmlBeans.get(moduleNumber)) {
+                String s = bean.getBeanName().substring(0, 1).toUpperCase() + bean.getBeanName().substring(1);
+                writer.println("    @GetMapping(\"/get" + s + "\")");
+                writer.println("    public String get" + s + "() {");
+                writer.println("       return " + bean.getBeanName() + ".getId();");
+                writer.println("    }");
+            }
+            writer.println("}");
+            writer.close();
+        }
+    }
+
+    private void generateMainXmlConfig(String moduleDir) throws Exception {
+        PrintWriter writer = new PrintWriter(moduleDir + "/src/main/resources/mainApplicationContext.xml", "UTF-8");
+        writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        writer.println("<beans xmlns=\"http://www.springframework.org/schema/beans\"");
+        writer.println("       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
+        writer.println("       xsi:schemaLocation=\"http://www.springframework.org/schema/beans");
+        writer.println("                           http://www.springframework.org/schema/beans/spring-beans.xsd\">");
+        writer.println();
+        writer.println("    <import resource=\"classpath*:/applicationContext-xmlBeansModule*.xml\"/>");
+        writer.println("</beans>");
+        writer.close();
+    }
+
     public void generateControllerForBeans(int moduleNumber, String moduleDir) throws Exception {
         String controllerClassName = "RestControllerForBeansModule"+ moduleNumber;
         PrintWriter writer = createFile(moduleDir + "/src/main/java/com/mytests/spring/", packageName, controllerClassName, ".java");

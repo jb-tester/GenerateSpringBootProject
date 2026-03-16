@@ -32,6 +32,7 @@
    <modules>
        <module>beans-modules</module>
        <module>jpa-modules</module>
+       <module>xml-modules</module>
        <module>web-rest-app-module</module>
    </modules>
 

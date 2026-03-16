@@ -22,6 +22,8 @@ public class Main {
     private static int componentsAmount = 3;
     private static int beansAmount = 3;
     private static String springBootVersion = "3.2.6";
+    private static int xml_modules_amount = 3;
+    private static int xml_classes_amount = 3;
 
     public static void main(String[] args) throws Exception {
         ResourceBundle rb = ResourceBundle.getBundle("config");
@@ -34,12 +36,15 @@ public class Main {
         componentsAmount = Integer.parseInt(rb.getString("components_amount"));
         beansAmount = Integer.parseInt(rb.getString("beans_amount"));
         springBootVersion = rb.getString("springboot_version");
+        xml_modules_amount = Integer.parseInt(rb.getString("xml_modules_amount"));
+        xml_classes_amount = Integer.parseInt(rb.getString("xml_classes_amount"));
         generateProject();
     }
 
     private static void generateProject() throws Exception {
         Map<Integer, List<BeanProperties>> allBeansByModule = new HashMap<>();
         Map<Integer, List<BeanProperties>> allReposByModule = new HashMap<>();
+        Map<Integer, List<BeanProperties>> allXmlBeansByModule = new HashMap<>();
 
         try {
             if (!new File(projectPath).mkdirs()) {
@@ -47,6 +52,7 @@ public class Main {
             }
             new File(projectPath + "/beans-modules").mkdirs();
             new File(projectPath + "/jpa-modules").mkdirs();
+            new File(projectPath + "/xml-modules").mkdirs();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,8 +82,18 @@ public class Main {
         }
         modifyFile(jpaModulesPom, "XXX", String.valueOf(jpaBeansModules));
 
+        File xmlModulesPom = new File(projectPath + "/xml-modules/pom.xml");
+        copyTemplateFile(new File("./src/main/resources/xml_modules_pom.txt"), xmlModulesPom);
+        StringBuilder xmlModules = new StringBuilder();
+        for (int i = 0; i < xml_modules_amount; i++) {
+            xmlModules.append("       <module>").append("xml-module").append(i).append("</module>\n");
+            GenerateXmlBeansModule xmlModule = new GenerateXmlBeansModule(i, xml_classes_amount, "xmlBeansModule" + i, "xml-module" + i, projectPath + "/xml-modules");
+            allXmlBeansByModule.put(i, xmlModule.generateAll());
+        }
+        modifyFile(xmlModulesPom, "XXX", String.valueOf(xmlModules));
+
         GenerateWebRestModule webRestModule = new GenerateWebRestModule(projectPath,
-                "webRestAppModule", allBeansByModule, allReposByModule, modules_amount, jpa_modules_amount);
+                "webRestAppModule", allBeansByModule, allReposByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
         webRestModule.generateAll();
 
        // allBeansByModule.forEach((k, v) -> System.out.println((k + ":" + v)));
