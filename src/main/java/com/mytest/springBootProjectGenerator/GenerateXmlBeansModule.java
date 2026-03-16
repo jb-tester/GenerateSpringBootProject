@@ -26,7 +26,7 @@ public class GenerateXmlBeansModule {
 
     public List<BeanProperties> generateAll() throws IOException {
         List<BeanProperties> beansList = new ArrayList<>();
-        String moduleDir = createModule(path, moduleName, "./src/main/resources/xml_module_pom.txt");
+        String moduleDir = createModule(path, moduleName, "./src/main/resources/templates/xml_module_pom.txt");
 
         for (int i = 0; i < classesAmount; i++) {
             String className = generateBeanClass(i);

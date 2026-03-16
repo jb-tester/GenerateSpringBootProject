@@ -28,10 +28,10 @@ public class GenerateWebRestModule {
     }
 
     public void generateAll() throws Exception {
-        String sourcePom = "./src/main/resources/web_rest_module_pom.txt";
+        String sourcePom = "./src/main/resources/templates/web_rest_module_pom.txt";
         String moduleDir = createModule(path, "web-rest-app-module", sourcePom);
         File targetPom = new File(moduleDir + "/pom.xml");
-        copyTemplateFile(new File("./src/main/resources/application.txt"), new File(moduleDir + "/src/main/resources/application.properties"));
+        copyTemplateFile(new File("./src/main/resources/templates/application.txt"), new File(moduleDir + "/src/main/resources/application.properties"));
         StringBuilder dependencies = new StringBuilder();
         for (int beanModuleNumber = 0; beanModuleNumber < modulesAmount; beanModuleNumber++) {
             dependencies.append("""

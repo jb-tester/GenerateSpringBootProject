@@ -31,14 +31,14 @@ public class GenerateJPAModule {
     public List<BeanProperties> generateAll() throws IOException {
         List<BeanProperties> repositories = generateModule();
         File jpaModuleConfigClassFile = new File(path + "/" + moduleName + "/src/main/java/com/mytests/spring/" + "jpa/"+packageName + "/JpaModule" + moduleNumber + "Configuration.java");
-        File sourceFile = new File("./src/main/resources/jpaModuleConfigClass.txt");
+        File sourceFile = new File("./src/main/resources/templates/jpaModuleConfigClass.txt");
         copyTemplateFile(sourceFile, jpaModuleConfigClassFile);
         modifyFile(jpaModuleConfigClassFile, "X", String.valueOf(moduleNumber));
         return repositories;
     }
 
     private List<BeanProperties> generateModule() throws IOException {
-        String sourcePom = "./src/main/resources/jpa_module_pom.txt";
+        String sourcePom = "./src/main/resources/templates/jpa_module_pom.txt";
         String moduleDir = createModule(path, moduleName, sourcePom);
         List<BeanProperties> repoList = new ArrayList<>();
         List<String> entityNames = new ArrayList<>();

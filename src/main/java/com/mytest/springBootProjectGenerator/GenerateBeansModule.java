@@ -40,7 +40,7 @@ public class GenerateBeansModule {
     }
 
     private void generateModule() throws IOException {
-        String sourcePom = "./src/main/resources/beans_module_pom.txt";
+        String sourcePom = "./src/main/resources/templates/beans_module_pom.txt";
         String moduleDir = createModule(path, moduleName, sourcePom);
     }
 

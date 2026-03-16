@@ -33,7 +33,7 @@ public class GenerateClientModule {
     }
 
     public void generateAll() throws IOException {
-        String moduleDir = createModule(path, "client-module", "./src/main/resources/client_module_pom.txt");
+        String moduleDir = createModule(path, "client-module", "./src/main/resources/templates/client_module_pom.txt");
 
         generateApplicationProperties(moduleDir);
 

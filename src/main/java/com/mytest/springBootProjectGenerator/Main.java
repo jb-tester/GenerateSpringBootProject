@@ -21,7 +21,7 @@ public class Main {
     private static int columnsAmount = 3;
     private static int componentsAmount = 3;
     private static int beansAmount = 3;
-    private static String springBootVersion = "3.2.6";
+    private static String springBootVersion = "4.0.3";
     private static int xml_modules_amount = 3;
     private static int xml_classes_amount = 3;
 
@@ -57,11 +57,11 @@ public class Main {
             e.printStackTrace();
         }
 
-        copyTemplateFile(new File("./src/main/resources/main_pom.txt"), new File(projectPath + "/pom.xml"));
+        copyTemplateFile(new File("./src/main/resources/templates/main_pom.txt"), new File(projectPath + "/pom.xml"));
         modifyFile(new File(projectPath + "/pom.xml"),"XXX", springBootVersion);
 
         File beansModulesPom = new File(projectPath + "/beans-modules/pom.xml");
-        copyTemplateFile(new File("./src/main/resources/beans_modules_pom.txt"), beansModulesPom);
+        copyTemplateFile(new File("./src/main/resources/templates/beans_modules_pom.txt"), beansModulesPom);
         StringBuilder beansModules = new StringBuilder();
         for (int i = 0; i < modules_amount; i++) {
             beansModules.append("       <module>" + "beans-module").append(i).append("</module>\n");
@@ -72,7 +72,7 @@ public class Main {
 
 
         File jpaModulesPom = new File(projectPath + "/jpa-modules/pom.xml");
-        copyTemplateFile(new File("./src/main/resources/jpa_modules_pom.txt"), jpaModulesPom);
+        copyTemplateFile(new File("./src/main/resources/templates/jpa_modules_pom.txt"), jpaModulesPom);
 
         StringBuilder jpaBeansModules = new StringBuilder();
         for (int i = 0; i < jpa_modules_amount; i++) {
@@ -83,7 +83,7 @@ public class Main {
         modifyFile(jpaModulesPom, "XXX", String.valueOf(jpaBeansModules));
 
         File xmlModulesPom = new File(projectPath + "/xml-modules/pom.xml");
-        copyTemplateFile(new File("./src/main/resources/xml_modules_pom.txt"), xmlModulesPom);
+        copyTemplateFile(new File("./src/main/resources/templates/xml_modules_pom.txt"), xmlModulesPom);
         StringBuilder xmlModules = new StringBuilder();
         for (int i = 0; i < xml_modules_amount; i++) {
             xmlModules.append("       <module>").append("xml-module").append(i).append("</module>\n");
