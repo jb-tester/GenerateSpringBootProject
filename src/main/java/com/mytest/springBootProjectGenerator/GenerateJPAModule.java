@@ -40,16 +40,17 @@ public class GenerateJPAModule {
     private List<BeanProperties> generateModule() throws IOException {
         String sourcePom = "./src/main/resources/templates/jpa_module_pom.txt";
         String moduleDir = createModule(path, moduleName, sourcePom);
-        List<BeanProperties> repoList = new ArrayList<>();
+        List<BeanProperties> serviceList = new ArrayList<>();
         List<String> entityNames = new ArrayList<>();
         for (int i = 0; i < entitiesAmount; i++) {
             String entity = generateEntity(i, columnsAmount);
             entityNames.add(entity);
-            String repo = generateRepository(entity,columnsAmount);
-            repoList.add(new BeanProperties("com.mytests.spring.jpa." + packageName, repo, repo.substring(0, 1).toLowerCase()+repo.substring(1), entity));
+            String repo = generateRepository(entity, columnsAmount);
+            String service = generateService(entity, repo, columnsAmount);
+            serviceList.add(new BeanProperties("com.mytests.spring.jpa." + packageName, service, service.substring(0, 1).toLowerCase() + service.substring(1), entity));
         }
         generateSchemaAndData(moduleDir, entityNames);
-        return repoList;
+        return serviceList;
     }
     private String generateEntity(int entityNumber, int fieldsAmount){
 
@@ -60,14 +61,14 @@ public class GenerateJPAModule {
             writer.println("""
                     import jakarta.persistence.Entity;
                     import jakarta.persistence.GeneratedValue;
+                    import jakarta.persistence.GenerationType;
                     import jakarta.persistence.Id;
                     
-                    @Entity
-                    """);
+                    @Entity""");
             writer.println("public class " + beanClassName + "  {\n");
             writer.println("""
                     
-                        @Id @GeneratedValue
+                        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                         private Long id;
                     
                         public void setId(Long id) {
@@ -147,7 +148,7 @@ public class GenerateJPAModule {
                     import org.springframework.data.repository.CrudRepository;
                     import org.springframework.data.repository.query.Param;
                     import java.util.List;
-                    
+
                     """);
             writer.println("public interface " + beanClassName + " extends CrudRepository<" + entityName + ", Integer> {\n");
             writer.println("   List<" + entityName + "> findAll();\n");
@@ -159,5 +160,40 @@ public class GenerateJPAModule {
             writer.close();
         }
         return beanClassName;
+    }
+
+    private String generateService(String entityName, String repoName, int fieldsAmount) throws IOException {
+        String serviceClassName = entityName + "Service";
+        String repoBeanName = repoName.substring(0, 1).toLowerCase() + repoName.substring(1);
+        PrintWriter writer = createFile(path + "/" + moduleName + "/src/main/java/com/mytests/spring/", "jpa/" + packageName, serviceClassName, ".java");
+        if (writer != null) {
+            writer.println("package com.mytests.spring.jpa." + packageName + ";\n\n");
+            writer.println("""
+                    import org.springframework.stereotype.Service;
+                    import org.springframework.beans.factory.annotation.Autowired;
+                    import org.springframework.transaction.annotation.Transactional;
+                    import java.util.List;
+
+                    @Service
+                    """);
+            writer.println("public class " + serviceClassName + " {\n");
+            writer.println("    @Autowired");
+            writer.println("    private " + repoName + " " + repoBeanName + ";\n");
+            writer.println("    public List<" + entityName + "> findAll() {");
+            writer.println("        return " + repoBeanName + ".findAll();");
+            writer.println("    }\n");
+            for (int i = 0; i < fieldsAmount; i++) {
+                writer.println("    public List<" + entityName + "> customQuery" + i + "(String arg) {");
+                writer.println("        return " + repoBeanName + ".customQuery" + i + "(arg);");
+                writer.println("    }\n");
+            }
+            writer.println("   @Transactional");
+            writer.println("    public " + entityName + " addEntry(" + entityName + " entity) {");
+            writer.println("        return " + repoBeanName + ".save(entity);");
+            writer.println("    }");
+            writer.println("}");
+            writer.close();
+        }
+        return serviceClassName;
     }
 }

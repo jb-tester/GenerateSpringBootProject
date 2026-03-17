@@ -12,16 +12,16 @@ public class GenerateWebRestModule {
     private final String path;
     private final String packageName;
     private final Map<Integer, List<BeanProperties>> allBeans;
-    private final Map<Integer, List<BeanProperties>> allRepos;
+    private final Map<Integer, List<BeanProperties>> allServices;
     private final Map<Integer, List<BeanProperties>> allXmlBeans;
     private final int modulesAmount;
     private final int jpa_modules_amount;
 
-    public GenerateWebRestModule(String path, String packageName, Map<Integer, List<BeanProperties>> allBeans, Map<Integer, List<BeanProperties>> allRepos, Map<Integer, List<BeanProperties>> allXmlBeans, int modulesAmount, int jpa_modules_amount) {
+    public GenerateWebRestModule(String path, String packageName, Map<Integer, List<BeanProperties>> allBeans, Map<Integer, List<BeanProperties>> allServices, Map<Integer, List<BeanProperties>> allXmlBeans, int modulesAmount, int jpa_modules_amount) {
         this.path = path;
         this.packageName = packageName;
         this.allBeans = allBeans;
-        this.allRepos = allRepos;
+        this.allServices = allServices;
         this.allXmlBeans = allXmlBeans;
         this.modulesAmount = modulesAmount;
         this.jpa_modules_amount = jpa_modules_amount;
@@ -189,30 +189,36 @@ public class GenerateWebRestModule {
         PrintWriter writer = createFile(moduleDir + "/src/main/java/com/mytests/spring/", packageName, controllerClassName, ".java");
         if (writer != null) {
             writer.println("package com.mytests.spring." + packageName + ";\n\n");
-            writer.println("import " + allRepos.get(moduleNumber).get(0).getPackageName() + "."  + "*;\n");
+            writer.println("import " + allServices.get(moduleNumber).get(0).getPackageName() + ".*;\n");
             writer.println("""
                     import org.springframework.web.bind.annotation.GetMapping;
+                    import org.springframework.web.bind.annotation.PostMapping;
+                    import org.springframework.web.bind.annotation.RequestBody;
                     import org.springframework.web.bind.annotation.RequestMapping;
                     import org.springframework.web.bind.annotation.RestController;
                     import org.springframework.beans.factory.annotation.Autowired;
                     import java.util.List;
-                    
+
                     @RestController
                     """);
             writer.println("@RequestMapping(\"/jpa-module" + moduleNumber + "\")");
             writer.println("public class " + controllerClassName + " {\n\n");
-            for (BeanProperties bean : allRepos.get(moduleNumber)) {
+            for (BeanProperties bean : allServices.get(moduleNumber)) {
                 writer.println("    @Autowired");
                 writer.println("    private " + bean.getClassName() + " " + bean.getBeanName() + ";\n");
             }
-            for (BeanProperties bean : allRepos.get(moduleNumber)) {
+            for (BeanProperties bean : allServices.get(moduleNumber)) {
                 writer.println("    @GetMapping(\"/all" + bean.getEntityName() + "s\")");
                 writer.println("    public List<" + bean.getEntityName() + "> getAll" + bean.getEntityName() + "s() {");
-                writer.println("       return " + bean.getBeanName() + ".findAll();" );
-                writer.println("    }");
+                writer.println("        return " + bean.getBeanName() + ".findAll();");
+                writer.println("    }\n");
+                writer.println("    @PostMapping(\"/add" + bean.getEntityName() + "\")");
+                writer.println("    public " + bean.getEntityName() + " add" + bean.getEntityName() + "(@RequestBody " + bean.getEntityName() + " entity) {");
+                writer.println("        return " + bean.getBeanName() + ".addEntry(entity);");
+                writer.println("    }\n");
             }
 
-            writer.println(" }");
+            writer.println("}");
             writer.close();
         }
     }

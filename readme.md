@@ -12,6 +12,8 @@ It contains of:
       each entity defining the specified (by `columns_amount`) number of String fields plus single `id`
    - the similar amount of crud repositories, one per entity, named `EntityX_YRepository`. Each repository defines
       the `findAll()` method and the `@Query`-annotated method per each column.
+   - the similar amount of service components that inject the repositories and call the repositories' methods. 
+     They also define the add methods.
    - the sql scripts for populating the database
 - specified by `xml_modules_amount` property amount of 'xml' modules that contain:
    - the specified by `xml_beans_amount` number of classes,
@@ -24,8 +26,9 @@ It contains of:
       - imports the config classes of all bean modules
       - imports the above main xml config
    - multiple `@RestController` classes - one per each bean/xmlBean/jpa module. Each controller:
-      - injects all beans and components/ all repositories from the corresponding bean/xmlBean/jpa module
-      - defines the single mapping method for each bean/component or repository returning the bean id or the results of repository `findAll()` method
+      - injects all beans and components/services from the corresponding bean/xmlBean/jpa module
+      - defines the single GET mapping method for each bean/component or repository service returning the bean id or the results of repository `findAll()` method
+      - defines the single POST mapping method for each repository service that calls the corresponding add method
 - the single separate client module that contains:
       - the separate `@HttpExchange` annotated interfaces that define the mappings for each main module controller
       - `application.properties` file with the base url for clients

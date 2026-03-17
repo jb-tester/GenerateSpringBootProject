@@ -43,7 +43,7 @@ public class Main {
 
     private static void generateProject() throws Exception {
         Map<Integer, List<BeanProperties>> allBeansByModule = new HashMap<>();
-        Map<Integer, List<BeanProperties>> allReposByModule = new HashMap<>();
+        Map<Integer, List<BeanProperties>> allServicesByModule = new HashMap<>();
         Map<Integer, List<BeanProperties>> allXmlBeansByModule = new HashMap<>();
 
         try {
@@ -78,7 +78,7 @@ public class Main {
         for (int i = 0; i < jpa_modules_amount; i++) {
             jpaBeansModules.append("       <module>" + "jpa-module").append(i).append("</module>\n");
             GenerateJPAModule jpaModule = new GenerateJPAModule(i, entitiesAmount, columnsAmount, "jpaModule" + i, "jpa-module" + i, projectPath + "/jpa-modules");
-            allReposByModule.put(i, jpaModule.generateAll());
+            allServicesByModule.put(i, jpaModule.generateAll());
         }
         modifyFile(jpaModulesPom, "XXX", String.valueOf(jpaBeansModules));
 
@@ -93,11 +93,11 @@ public class Main {
         modifyFile(xmlModulesPom, "XXX", String.valueOf(xmlModules));
 
         GenerateWebRestModule webRestModule = new GenerateWebRestModule(projectPath,
-                "webRestAppModule", allBeansByModule, allReposByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
+                "webRestAppModule", allBeansByModule, allServicesByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
         webRestModule.generateAll();
 
         GenerateClientModule clientModule = new GenerateClientModule(projectPath,
-                "clientModule", allBeansByModule, allReposByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
+                "clientModule", allBeansByModule, allServicesByModule, allXmlBeansByModule, modules_amount, jpa_modules_amount);
         clientModule.generateAll();
 
        // allBeansByModule.forEach((k, v) -> System.out.println((k + ":" + v)));
